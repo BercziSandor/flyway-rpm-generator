@@ -2,7 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <flywayVersion>6.0.0-beta</flywayVersion>
+        <!-- https://flywaydb.org/documentation/commandline/ -->
+        <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-commandline -->
+        <flywayVersion>6.0.2</flywayVersion>
+        <oracleVersion>18.3.0.0</oracleVersion>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.flywaydb</groupId>
@@ -12,8 +15,20 @@
     <name>flyway-commandline</name>
     <description>Version control for your database. Robust schema evolution across all your environments. With ease, pleasure and plain SQL.</description>
     <url>https://flywaydb.org</url>
-    <dependencies>
-    </dependencies>
+    <repositories>
+        <!-- <repository>
+            <id>maven.icm.edu.pl</id>
+            <url>http://maven.icm.edu.pl/artifactory/repo</url>
+        </repository> -->
+    </repositories>
+    <!-- <dependencies>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>18.3.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies> -->
     <build>
         <plugins>
             <plugin>
@@ -35,6 +50,23 @@
                             <outputDirectory>${project.build.directory}/binary</outputDirectory>
                         </configuration>
                     </execution>
+                    <!-- <execution>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.oracle</groupId>
+                                    <artifactId>ojdbc8</artifactId>
+                                    <version>${oracleVersion}</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/binary</outputDirectory>
+                        </configuration>
+                    </execution> -->
+                    <!-- <dependency></dependency> -->
                 </executions>
             </plugin>
             <plugin>
@@ -54,23 +86,57 @@
                     <license>Apache License, Version 2.0</license>
                     <group>Application/Database</group>
                     <sourceEncoding>utf-8</sourceEncoding>
+                    <!-- <targetOS> -->
+                    <defaultDirmode>755</defaultDirmode>
+                    <defaultFilemode>440</defaultFilemode>
+                    <defaultGroupname>root</defaultGroupname>
+                    <defaultUsername>root</defaultUsername>
                     <requires>
-                        <require>java &gt;= 7</require>
+                        <!-- <require>java &gt;= 7</require> -->
                     </requires>
+                    <autoRequires>false</autoRequires>
                     <mappings>
                         <mapping>
                             <directory>/opt</directory>
-                            <filemode>440</filemode>
-                            <username>root</username>
-                            <groupname>root</groupname>
                             <sources>
                                 <source>
                                     <location>${project.build.directory}/binary</location>
+                                        <excludes>
+                                          <exclude>flyway-${flywayVersion}/drivers/*.jar</exclude>
+                                          <exclude>flyway-${flywayVersion}/lib/enterprise/*.jar</exclude>
+                                          <exclude>flyway-${flywayVersion}/lib/pro/*.jar</exclude>
+                                        </excludes>
                                 </source>
                                 <softlinkSource>
                                     <destination>flyway</destination>
                                     <location>flyway-${flywayVersion}</location>
                                 </softlinkSource>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>/opt/flyway-${flywayVersion}</directory>
+                            <filemode>755</filemode>
+                            <sources>
+                                <source>
+                                    <location>${project.build.directory}/binary/flyway-${flywayVersion}/flyway</location>
+                                </source>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>/opt/bin</directory>
+                            <sources>
+                                <softlinkSource>
+                                    <destination>flyway</destination>
+                                    <location>/opt/flyway/flyway</location>
+                                </softlinkSource>
+                            </sources>
+                        </mapping>
+                        <mapping>
+                            <directory>/opt/flyway-${flywayVersion}/drivers/</directory>
+                            <sources>
+                                <source>
+                                    <location>${basedir}/src/main/resources/drivers/oracle/${oracleVersion}</location>
+                                </source>
                             </sources>
                         </mapping>
                     </mappings>
