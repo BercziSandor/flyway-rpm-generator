@@ -4,8 +4,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- https://flywaydb.org/documentation/commandline/ -->
         <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-commandline -->
-        <flywayVersion>6.0.3</flywayVersion>
-        <oracleVersion>18.3.0.0</oracleVersion>
+        <flywayVersion>7.0.2</flywayVersion>
+        <oracleVersion>19.8</oracleVersion>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.flywaydb</groupId>
